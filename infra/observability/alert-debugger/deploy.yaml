@@ -13,8 +13,14 @@ spec:
     spec:
       containers:
         - name: echo
-          image: ghcr.io/caarlos0/httpecho:latest
-          args: ["-port", "8080", "-i"]
+          image: ealen/echo-server:0.9.2
+          env:
+            - name: PORT
+              value: "8080"
+            - name: LOG_HEADERS
+              value: "true"
+            - name: LOG_BODY
+              value: "true"
           ports:
             - containerPort: 8080
 ---
