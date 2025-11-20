@@ -1,0 +1,110 @@
+{
+  "title": "SUGESTAO: HPA Scaling",
+  "schemaVersion": 39,
+  "version": 1,
+  "timezone": "",
+  "time": { "from": "now-6h", "to": "now" },
+
+  "panels": [
+    {
+      "type": "gauge",
+      "title": "Réplicas atuais — Python",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 10,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 6 },
+              { "color": "red", "value": 8 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "kube_deployment_status_replicas{deployment=\"available-schedules-python\", namespace=\"apps\"}",
+          "instant": true
+        }
+      ]
+    },
+
+    {
+      "type": "gauge",
+      "title": "Réplicas atuais — Go",
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 10,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 6 },
+              { "color": "red", "value": 8 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "kube_deployment_status_replicas{deployment=\"available-schedules-go\", namespace=\"apps\"}",
+          "instant": true
+        }
+      ]
+    },
+
+    {
+      "type": "timeseries",
+      "title": "Histórico de Réplicas no Tempo",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "kube_deployment_status_replicas{deployment=\"available-schedules-python\", namespace=\"apps\"}",
+          "legendFormat": "python — réplicas"
+        },
+        {
+          "expr": "kube_deployment_status_replicas{deployment=\"available-schedules-go\", namespace=\"apps\"}",
+          "legendFormat": "go — réplicas"
+        }
+      ]
+    },
+
+    {
+      "type": "timeseries",
+      "title": "Por que o HPA escalou? (CPU Utilization x Target)",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 22 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        }
+      },
+      "targets": [
+        {
+          "expr": "100 * sum(rate(container_cpu_usage_seconds_total{namespace=\"apps\", pod=~\"available-schedules-python.*\", container!=\"POD\"}[1m]))",
+          "legendFormat": "Python — CPU (%)"
+        },
+        {
+          "expr": "1000 * sum(rate(container_cpu_usage_seconds_total{namespace=\"apps\", pod=~\"available-schedules-go.*\", container!=\"POD\"}[1m]))",
+          "legendFormat": "Go — CPU (%)"
+        },
+        {
+          "expr": "70",
+          "legendFormat": "HPA Target (70%)",
+          "type": "threshold",
+          "interval": "",
+          "hide": false
+        }
+      ],
+      "options": {
+        "tooltip": { "mode": "single" },
+        "legend": { "displayMode": "list", "placement": "bottom" }
+      },
+      "custom": {}
+    }
+  ]
+}
