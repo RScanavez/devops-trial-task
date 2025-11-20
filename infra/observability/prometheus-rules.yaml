@@ -2,19 +2,80 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: noisy-rules
-  labels: { release: kps }
+  labels:
+    release: kps
 spec:
   groups:
     - name: app.availability
       rules:
-        - alert: HighErrorRate
-          expr: sum(rate(http_requests_total{job=~"available-schedules-(python|go)",status=~"5.."}[3m])) / sum(rate(http_requests_total{job=~"available-schedules-(python|go)"}[3m])) > 0.005
-          for: 1m
-          labels: { severity: page, service: available-schedules }
+        - alert: HighErrorRateWarning
+          expr: |
+            sum(rate(http_requests_total{
+              job=~"available-schedules-(python|go)",
+              status=~"5.."
+            }[5m]))
+            /
+            sum(rate(http_requests_total{
+              job=~"available-schedules-(python|go)"
+            }[5m])) > 0.02
+          for: 5m
+          labels:
+            severity: warning
+            service: available-schedules
           annotations:
-            summary: ">0.5% 5xx (1m) — pode ser ruidoso"
+            summary: "Erro > 2% (5m) — possível degradação"
+            runbook: "https://runbooks.local/error-rate"
+
+        - alert: HighErrorRate
+          expr: |
+            sum(rate(http_requests_total{
+              job=~"available-schedules-(python|go)",
+              status=~"5.."
+            }[5m]))
+            /
+            sum(rate(http_requests_total{
+              job=~"available-schedules-(python|go)"
+            }[5m])) > 0.05
+          for: 5m
+          labels:
+            severity: page
+            service: available-schedules
+          annotations:
+            summary: "Erro > 5% (5m) — incidente grave"
+            runbook: "https://runbooks.local/error-rate"
+
+        - alert: HighLatencyP95Warning
+          expr: |
+            histogram_quantile(
+              0.95,
+              sum by (le, job)(
+                rate(http_request_duration_seconds_bucket{
+                  job=~"available-schedules-(python|go)"
+                }[5m])
+              )
+            ) > 0.30
+          for: 10m
+          labels:
+            severity: warning
+            service: available-schedules
+          annotations:
+            summary: "p95 > 300ms por 10m — latência acima do normal"
+            runbook: "https://runbooks.local/latency-p95"
+
         - alert: HighLatencyP95
-          expr: histogram_quantile(0.95, sum by (le)(rate(http_request_duration_seconds_bucket{job=~"available-schedules-(python|go)"}[3m]))) > 0.15
-          for: 1m
-          labels: { severity: page, service: available-schedules }
-          annotations: { summary: "p95 > 150ms (1m) — ruidoso" }
+          expr: |
+            histogram_quantile(
+              0.95,
+              sum by (le, job)(
+                rate(http_request_duration_seconds_bucket{
+                  job=~"available-schedules-(python|go)"
+                }[5m])
+              )
+            ) > 0.50
+          for: 10m
+          labels:
+            severity: page
+            service: available-schedules
+          annotations:
+            summary: "p95 > 500ms por 10m — impacto real no usuário"
+            runbook: "https://runbooks.local/latency-p95"
