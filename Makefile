@@ -44,7 +44,10 @@ up: ## Cria cluster kind e instala stack de observabilidade + ingress
 	fi
 	@kubectl apply -f infra/ingress/ >/dev/null
 	$(call sublog,Ingressos aplicados)
-
+	$(call log,Instalando Metrics Server para KIND)
+	kubectl apply -k infra/metrics-server
+	$(call sublog,Aguardando rollout)
+	kubectl rollout status deployment/metrics-server -n kube-system
 app.build: ## Build das aplicações exemplo (Python e Go)
 	$(call log,Build das imagens de exemplo)
 	@for app in $(APPS); do \
