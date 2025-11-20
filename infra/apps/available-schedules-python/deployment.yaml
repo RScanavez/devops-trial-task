@@ -4,7 +4,7 @@ metadata:
   name: available-schedules-python
   labels: { app: available-schedules-python }
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels: { app: available-schedules-python }
   template:
