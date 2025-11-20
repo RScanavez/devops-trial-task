@@ -33,7 +33,7 @@ spec:
       selectPolicy: Max
 
     scaleDown:
-      stabilizationWindowSeconds: 10  
+      stabilizationWindowSeconds: 60  
       policies:
         - type: Percent
           value: 100
