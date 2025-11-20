@@ -29,7 +29,7 @@
     },
     {
       "type": "timeseries",
-      "title": "Ratio em % (200vs500) - available-schedules-go",
+      "title": "Erro em % - available-schedules-go",
       "id": 4,
       "datasource": {
         "type": "loki",
@@ -39,8 +39,8 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by(app) (count_over_time({app=\"available-schedules-go\"} |~ `200` [1m])) / sum by(app) (count_over_time({app=\"available-schedules-go\"} |~ `500` [1m]))",
-          "legendFormat": "Ratio (%)"
+          "expr": "100 * (sum(count_over_time({app=\"available-schedules-go\"} |~ `500` [5m]))/sum(count_over_time({app=\"available-schedules-go\"} [5m])))",
+          "legendFormat": "Erro (%)"
         }
       ]
     },
@@ -68,7 +68,7 @@
     },
     {
       "type": "timeseries",
-      "title": "Ratio em % (200vs500) - available-schedules-python",
+      "title": "Erro em % - available-schedules-python",
       "id": 5,
       "datasource": {
         "type": "loki",
@@ -78,8 +78,8 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by(app) (count_over_time({app=\"available-schedules-python\"} |~ `200` [1m])) / sum by(app) (count_over_time({app=\"available-schedules-python\"} |~ `500` [1m]))",
-          "legendFormat": "Ratio (%)"
+          "expr": "100 * (sum(count_over_time({app=\"available-schedules-python\"} |~ `500` [5m]))/sum(count_over_time({app=\"available-schedules-python\"} [5m])))",
+          "legendFormat": "Erro (%)"
         }
       ]
     }

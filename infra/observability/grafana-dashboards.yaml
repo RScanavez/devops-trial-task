@@ -198,7 +198,10 @@ data:
           "type": "timeseries",
           "title": "Requisições em available-schedules-go",
           "id": 1,
-          "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
+          "datasource": {
+            "type": "loki",
+            "uid": "P8E80F9AEF21F6940"
+          },
           "gridPos": { "h": 7, "w": 11, "x": 0, "y": 0 },
           "targets": [
             {
@@ -215,15 +218,18 @@ data:
         },
         {
           "type": "timeseries",
-          "title": "Ratio em % (200vs500) - available-schedules-go",
+          "title": "Erro em % - available-schedules-go",
           "id": 4,
-          "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
+          "datasource": {
+            "type": "loki",
+            "uid": "P8E80F9AEF21F6940"
+          },
           "gridPos": { "h": 7, "w": 12, "x": 11, "y": 0 },
           "targets": [
             {
               "refId": "A",
-              "expr": "sum by(app) (count_over_time({app=\"available-schedules-go\"} |~ `200` [1m])) / sum by(app) (count_over_time({app=\"available-schedules-go\"} |~ `500` [1m]))",
-              "legendFormat": "Ratio (%)"
+              "expr": "100 * (sum(count_over_time({app=\"available-schedules-go\"} |~ `500` [5m]))/sum(count_over_time({app=\"available-schedules-go\"} [5m])))",
+              "legendFormat": "Erro (%)"
             }
           ]
         },
@@ -231,7 +237,10 @@ data:
           "type": "timeseries",
           "title": "Requisições em available-schedules-python",
           "id": 2,
-          "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
+          "datasource": {
+            "type": "loki",
+            "uid": "P8E80F9AEF21F6940"
+          },
           "gridPos": { "h": 7, "w": 11, "x": 0, "y": 7 },
           "targets": [
             {
@@ -248,15 +257,18 @@ data:
         },
         {
           "type": "timeseries",
-          "title": "Ratio em % (200vs500) - available-schedules-python",
+          "title": "Erro em % - available-schedules-python",
           "id": 5,
-          "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
+          "datasource": {
+            "type": "loki",
+            "uid": "P8E80F9AEF21F6940"
+          },
           "gridPos": { "h": 7, "w": 12, "x": 11, "y": 7 },
           "targets": [
             {
               "refId": "A",
-              "expr": "sum by(app) (count_over_time({app=\"available-schedules-python\"} |~ `200` [1m])) / sum by(app) (count_over_time({app=\"available-schedules-python\"} |~ `500` [1m]))",
-              "legendFormat": "Ratio (%)"
+              "expr": "100 * (sum(count_over_time({app=\"available-schedules-python\"} |~ `500` [5m]))/sum(count_over_time({app=\"available-schedules-python\"} [5m])))",
+              "legendFormat": "Erro (%)"
             }
           ]
         }
